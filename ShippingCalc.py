@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 from cycler import cycler
 from shippingData import *
-
+import re
 
 class shippingMethod:
     def __init__(self,name, firstWeight, continueWeight, firstFee, continueFee, maxWeight):
@@ -179,5 +179,43 @@ def getPlotandPrices(weight):
 
 
     
-
+link = "https://m.tb.cn/h.USr1GUl?tk=gWLDdXEN9bG"
         
+resultURL = "Invalid Link!"
+
+if "https://m.intl.taobao.com/" in link or "h5.m.goofish.com" in link:
+    index = link.find("id=") +3
+    urlid = link[index:index+12]
+    resultURL = "https://item.taobao.com/item.htm?id=" + urlid
+        
+
+else:
+    if "m.tb.cn" in link:
+        a = link.find("https://m.tb.cn/")
+        link = link[a:a+40]
+        
+        r = requests.get(link)
+        
+        link = r.text
+        if "h5.m.goofish.com" in link:
+            index = link.find("https://h5.m.goofish.com/item?id=") + 33
+            
+            urlid = link[index:index+12]
+            resultURL = "https://item.taobao.com/item.htm?id=" + urlid
+        else:
+            index = link.find("https://a.m.taobao.com/i") + 24
+            if index == 23:
+                index = link.find("https://item.taobao.com/item.htm?id=")
+                if index == 23:
+                    resultURL = ("Something went wrong.")
+                
+                else:
+                    urlid = link[index+36:index+48]
+                    
+                    resultURL = "https://item.taobao.com/item.htm?id=" + urlid
+            else:
+                urlid = link[index+36:index+48]
+                resultURL = "https://item.taobao.com/item.htm?id=" + urlid
+        
+print(resultURL)
+                
